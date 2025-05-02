@@ -34,6 +34,7 @@ class _StudentListScreenState extends State<StudentListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Student Records'),
+        backgroundColor: const Color.fromARGB(255, 235, 130, 9),
         actions: [
           IconButton(
             icon: Icon(isGrid ? Icons.list : Icons.grid_view),
@@ -51,59 +52,43 @@ class _StudentListScreenState extends State<StudentListScreen> {
             ),
         child: const Icon(Icons.add),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: CustomSearchBar(
-              hintText: 'Search by name...',
-              onChanged: (value) => setState(() => _searchQuery = value),
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              const Color.fromARGB(255, 235, 130, 9),
+              const Color.fromARGB(255, 218, 232, 18),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          Expanded(
-            child:
-                students.isEmpty
-                    ? const EmptyMessage(message: 'No students found.')
-                    : isGrid
-                    ? GridView.builder(
-                      padding: const EdgeInsets.all(12),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.9,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                          ),
-                      itemCount: students.length,
-                      itemBuilder: (context, index) {
-                        final student = students[index];
-                        return StudentGridCard(
-                          student: student,
-                          onTap: () => _openDetail(student),
-                          onEdit: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) =>
-                                        AddEditStudentScreen(student: student),
-                              ),
-                            );
-                          },
-                          onDelete: () {
-                            provider.deleteStudent(student.id!);
-                          },
-                        );
-                      },
-                    )
-                    : ListView.builder(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: students.length,
-                      itemBuilder: (context, index) {
-                        final student = students[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          child: StudentListCard(
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: CustomSearchBar(
+                onChanged: (value) => setState(() => _searchQuery = value),
+              ),
+            ),
+            Expanded(
+              child:
+                  students.isEmpty
+                      ? EmptyMessage()
+                      : isGrid
+                      ? GridView.builder(
+                        padding: const EdgeInsets.all(12),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.9,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                            ),
+                        itemCount: students.length,
+                        itemBuilder: (context, index) {
+                          final student = students[index];
+                          return StudentGridCard(
                             student: student,
                             onTap: () => _openDetail(student),
                             onEdit: () {
@@ -120,12 +105,40 @@ class _StudentListScreenState extends State<StudentListScreen> {
                             onDelete: () {
                               provider.deleteStudent(student.id!);
                             },
-                          ),
-                        );
-                      },
-                    ),
-          ),
-        ],
+                          );
+                        },
+                      )
+                      : ListView.builder(
+                        padding: const EdgeInsets.all(12),
+                        itemCount: students.length,
+                        itemBuilder: (context, index) {
+                          final student = students[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            child: StudentListCard(
+                              student: student,
+                              onTap: () => _openDetail(student),
+                              onEdit: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (_) => AddEditStudentScreen(
+                                          student: student,
+                                        ),
+                                  ),
+                                );
+                              },
+                              onDelete: () {
+                                provider.deleteStudent(student.id!);
+                              },
+                            ),
+                          );
+                        },
+                      ),
+            ),
+          ],
+        ),
       ),
     );
   }
