@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:student_management_provider/models/student_model.dart';
 
 class DBHelper {
-  static final DBHelper _instance = DBhelper._instance();
+  static final DBHelper _instance = DBHelper._internal();
   factory DBHelper() => _instance;
   DBHelper._internal();
 
@@ -35,5 +35,31 @@ class DBHelper {
         ''');
       },
     );
+  }
+
+  Future<int> insertStudent(StudentModel student) async {
+    final db = await database;
+    return await db.insert('students', student.toMap());
+  }
+
+  Future<List<StudentModel>> getAllStudents() async {
+    final db = await database;
+    final List<Map<String, dynamic>> result = await db.query('students');
+    return result.map((e) => StudentModel.fromMap(e)).toList();
+  }
+
+  Future<int> updateStudent(StudentModel student) async {
+    final db = await database;
+    return await db.update(
+      'students',
+      student.toMap(),
+      where: 'id = ?',
+      whereArgs: [student.id],
+    );
+  }
+
+  Future<int> deleteStudent(int id) async {
+    final db = await database;
+    return await db.delete('students', where: 'id = ?', whereArgs: [id]);
   }
 }
