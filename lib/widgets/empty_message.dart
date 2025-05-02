@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 
 class EmptyMessage extends StatelessWidget {
-  final String message;
-
-  const EmptyMessage({super.key, required this.message});
-
+  const EmptyMessage({super.key});
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        message,
-        style: const TextStyle(fontSize: 18, color: Colors.grey),
+        'No students found.',
+        style: const TextStyle(fontSize: 18, color: Colors.black),
         textAlign: TextAlign.center,
       ),
     );

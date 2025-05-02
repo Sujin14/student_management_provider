@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/student_model.dart';
-import '../widgets/confirm_dialog.dart'; // Your custom dialog file
+import '../widgets/confirm_dialog.dart';
 
 class StudentListCard extends StatelessWidget {
   final StudentModel student;
@@ -22,11 +22,13 @@ class StudentListCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
+        color: const Color.fromARGB(255, 235, 205, 9),
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: ListTile(
           leading: CircleAvatar(
-            radius: 30,
+            radius: 25,
             backgroundImage: FileImage(File(student.imagePath)),
           ),
           title: Text(
@@ -44,12 +46,7 @@ class StudentListCard extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.delete, color: Colors.red),
                 onPressed: () {
-                  showConfirmDialog(
-                    context: context,
-                    title: 'Delete Student',
-                    content: 'Are you sure you want to delete ${student.name}?',
-                    onConfirm: onDelete,
-                  );
+                  showConfirmDialog(context: context, onConfirm: onDelete);
                 },
                 tooltip: 'Delete',
               ),

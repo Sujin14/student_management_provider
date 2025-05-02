@@ -52,15 +52,11 @@ class StudentGridCard extends StatelessWidget {
                   ),
                   IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      showConfirmDialog(
-                        context: context,
-                        title: 'Delete Student',
-                        content:
-                            'Are you sure you want to delete ${student.name}?',
-                        onConfirm: onDelete,
-                      );
-                    },
+                    onPressed:
+                        () => showConfirmDialog(
+                          context: context,
+                          onConfirm: onDelete,
+                        ),
                     tooltip: 'Delete',
                   ),
                 ],

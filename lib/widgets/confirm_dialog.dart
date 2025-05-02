@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 
 Future<void> showConfirmDialog({
   required BuildContext context,
-  required String title,
-  required String content,
   required VoidCallback onConfirm,
 }) {
   return showDialog(
     context: context,
     builder:
         (_) => AlertDialog(
-          title: Text(title),
-          content: Text(content),
+          title: const Text('Delete Student'),
+          content: const Text('Are you sure you want to delete this student?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
