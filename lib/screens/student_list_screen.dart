@@ -4,7 +4,7 @@ import 'package:student_management_provider/models/student_model.dart';
 import 'package:student_management_provider/providers/student_provider.dart';
 import 'package:student_management_provider/screens/add_edit_student_screen.dart';
 import 'package:student_management_provider/screens/student_detail_screen.dart';
-import 'package:student_management_provider/widgets/form/common/empty_message.dart';
+import 'package:student_management_provider/widgets/common/empty_message.dart';
 import 'package:student_management_provider/widgets/search/search_bar.dart';
 import 'package:student_management_provider/widgets/layout/student_grid_card.dart';
 import 'package:student_management_provider/widgets/layout/student_list_card.dart';

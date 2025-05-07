@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../models/student_model.dart';
-import '../form/common/confirm_dialog.dart';
+import '../common/confirm_dialog.dart';
 
 class StudentListCard extends StatelessWidget {
   final StudentModel student;
