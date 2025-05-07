@@ -4,32 +4,18 @@ import 'package:student_management_provider/models/student_model.dart';
 import 'package:student_management_provider/providers/student_provider.dart';
 import 'package:student_management_provider/screens/add_edit_student_screen.dart';
 import 'package:student_management_provider/screens/student_detail_screen.dart';
-import 'package:student_management_provider/widgets/empty_message.dart';
-import 'package:student_management_provider/widgets/search_bar.dart';
-import 'package:student_management_provider/widgets/student_grid_card.dart';
-import 'package:student_management_provider/widgets/student_list_card.dart';
+import 'package:student_management_provider/widgets/form/common/empty_message.dart';
+import 'package:student_management_provider/widgets/search/search_bar.dart';
+import 'package:student_management_provider/widgets/layout/student_grid_card.dart';
+import 'package:student_management_provider/widgets/layout/student_list_card.dart';
 
-class StudentListScreen extends StatefulWidget {
+class StudentListScreen extends StatelessWidget {
   const StudentListScreen({super.key});
-
-  @override
-  State<StudentListScreen> createState() => _StudentListScreenState();
-}
-
-class _StudentListScreenState extends State<StudentListScreen> {
-  bool isGrid = false;
-  String _searchQuery = '';
-
-  @override
-  void initState() {
-    super.initState();
-    Provider.of<StudentProvider>(context, listen: false).fetchStudents();
-  }
 
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<StudentProvider>(context);
-    final students = provider.searchStudents(_searchQuery);
+    final students = provider.filteredStudents;
 
     return Scaffold(
       appBar: AppBar(
@@ -37,10 +23,8 @@ class _StudentListScreenState extends State<StudentListScreen> {
         backgroundColor: const Color.fromARGB(255, 235, 130, 9),
         actions: [
           IconButton(
-            icon: Icon(isGrid ? Icons.list : Icons.grid_view),
-            onPressed: () {
-              setState(() => isGrid = !isGrid);
-            },
+            icon: Icon(provider.isGrid ? Icons.list : Icons.grid_view),
+            onPressed: provider.toggleViewMode,
           ),
         ],
       ),
@@ -67,15 +51,13 @@ class _StudentListScreenState extends State<StudentListScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(12),
-              child: CustomSearchBar(
-                onChanged: (value) => setState(() => _searchQuery = value),
-              ),
+              child: CustomSearchBar(onChanged: provider.updateSearchQuery),
             ),
             Expanded(
               child:
                   students.isEmpty
-                      ? EmptyMessage()
-                      : isGrid
+                      ? const EmptyMessage()
+                      : provider.isGrid
                       ? GridView.builder(
                         padding: const EdgeInsets.all(12),
                         gridDelegate:
@@ -90,7 +72,7 @@ class _StudentListScreenState extends State<StudentListScreen> {
                           final student = students[index];
                           return StudentGridCard(
                             student: student,
-                            onTap: () => _openDetail(student),
+                            onTap: () => _openDetail(context, student),
                             onEdit: () {
                               Navigator.push(
                                 context,
@@ -117,7 +99,7 @@ class _StudentListScreenState extends State<StudentListScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 6),
                             child: StudentListCard(
                               student: student,
-                              onTap: () => _openDetail(student),
+                              onTap: () => _openDetail(context, student),
                               onEdit: () {
                                 Navigator.push(
                                   context,
@@ -143,7 +125,7 @@ class _StudentListScreenState extends State<StudentListScreen> {
     );
   }
 
-  void _openDetail(StudentModel student) {
+  void _openDetail(BuildContext context, StudentModel student) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => StudentDetailScreen(student: student)),

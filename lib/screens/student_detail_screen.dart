@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:student_management_provider/models/student_model.dart';
 import 'package:student_management_provider/providers/student_provider.dart';
 import 'package:student_management_provider/screens/add_edit_student_screen.dart';
-import 'package:student_management_provider/widgets/confirm_dialog.dart';
+import 'package:student_management_provider/widgets/form/common/confirm_dialog.dart';
 
 class StudentDetailScreen extends StatelessWidget {
   final StudentModel student;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:student_management_provider/widgets/form/student_form.dart';
 import '../models/student_model.dart';
-import '../widgets/student_form.dart';
 
 class AddEditStudentScreen extends StatelessWidget {
   final StudentModel? student;

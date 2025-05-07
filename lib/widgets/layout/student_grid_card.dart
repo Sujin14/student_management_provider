@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../models/student_model.dart';
-import '../widgets/confirm_dialog.dart'; // Make sure this is correctly imported
+import '../../models/student_model.dart';
+import '../form/common/confirm_dialog.dart'; // Make sure this is correctly imported
 
 class StudentGridCard extends StatelessWidget {
   final StudentModel student;

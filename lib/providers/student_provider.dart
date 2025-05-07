@@ -49,4 +49,31 @@ class StudentProvider extends ChangeNotifier {
       return null;
     }
   }
+
+  bool _isGrid = false;
+  String _searchQuery = '';
+
+  bool get isGrid => _isGrid;
+  String get searchQuery => _searchQuery;
+
+  void toggleViewMode() {
+    _isGrid = !_isGrid;
+    notifyListeners();
+  }
+
+  void updateSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
+
+  List<StudentModel> get filteredStudents =>
+      _searchQuery.isEmpty
+          ? _students
+          : _students
+              .where(
+                (student) => student.name.toLowerCase().contains(
+                  _searchQuery.toLowerCase(),
+                ),
+              )
+              .toList();
 }
