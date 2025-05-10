@@ -1,79 +1,89 @@
 import 'package:flutter/material.dart';
-import 'package:student_management_provider/db/db_helper.dart';
-import 'package:student_management_provider/models/student_model.dart';
+import '../models/student_model.dart';
+import '../repository/student_repository.dart';
 
 class StudentProvider extends ChangeNotifier {
-  List<StudentModel> _students = [];
-  List<StudentModel> get students => _students;
+  final StudentRepository _repository = StudentRepository();
 
-  Future<void> fetchStudents() async {
-    _students = await DBHelper().getAllStudents();
-    notifyListeners();
+  List<Student> _students = [];
+  List<Student> get students => _students;
+
+  List<Student> _searchResults = [];
+  List<Student> get searchResults => _searchResults;
+
+  bool _isGridView = false;
+  bool get isGridView => _isGridView;
+
+  bool _isSearching = false;
+  bool get isSearching => _isSearching;
+
+  String _lastQuery = '';
+
+  StudentProvider() {
+    loadStudents();
   }
 
-  Future<void> addStudent(StudentModel student) async {
-    await DBHelper().insertStudent(student);
-    _students.add(student);
-    notifyListeners();
-  }
+  Future<void> loadStudents() async {
+    _students = await _repository.fetchStudents();
 
-  Future<void> updateStudent(StudentModel student) async {
-    await DBHelper().updateStudent(student);
-    final index = _students.indexWhere((s) => s.id == student.id);
-    if (index != -1) {
-      _students[index] = student;
-      notifyListeners();
+    if (_isSearching && _lastQuery.isNotEmpty) {
+      _searchResults =
+          _students.where((student) {
+            return student.name.toLowerCase().startsWith(
+              _lastQuery.toLowerCase(),
+            );
+          }).toList();
     }
+
+    notifyListeners();
+  }
+
+  Future<void> addStudent(Student student) async {
+    await _repository.addStudent(student);
+    await loadStudents();
+  }
+
+  Future<void> updateStudent(Student student) async {
+    await _repository.updateStudent(student);
+    await loadStudents();
   }
 
   Future<void> deleteStudent(int id) async {
-    await DBHelper().deleteStudent(id);
-    _students.removeWhere((student) => student.id == id);
+    await _repository.deleteStudent(id);
+    await loadStudents();
+  }
+
+  void searchStudent(String query) {
+    _lastQuery = query;
+
+    if (query.isEmpty) {
+      _searchResults.clear();
+      _isSearching = false;
+    } else {
+      _searchResults =
+          _students.where((student) {
+            return student.name.toLowerCase().startsWith(query.toLowerCase());
+          }).toList();
+      _isSearching = true;
+    }
+
     notifyListeners();
   }
 
-  List<StudentModel> searchStudents(String query) {
-    if (query.isEmpty) {
-      return _students;
-    } else {
-      return _students.where((student) {
-        return student.name.toLowerCase().contains(query.toLowerCase());
-      }).toList();
-    }
+  void clearSearch() {
+    _searchResults.clear();
+    _lastQuery = '';
+    _isSearching = false;
+    notifyListeners();
   }
-
-  StudentModel? getStudentById(int id) {
-    try {
-      return _students.firstWhere((student) => student.id == id);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  bool _isGrid = false;
-  String _searchQuery = '';
-
-  bool get isGrid => _isGrid;
-  String get searchQuery => _searchQuery;
 
   void toggleViewMode() {
-    _isGrid = !_isGrid;
+    _isGridView = !_isGridView;
     notifyListeners();
   }
 
-  void updateSearchQuery(String query) {
-    _searchQuery = query;
+  void toggleSearch(bool isSearching) {
+    _isSearching = isSearching;
     notifyListeners();
   }
-
-  List<StudentModel> get filteredStudents =>
-      _searchQuery.isEmpty
-          ? _students
-          : _students
-              .where(
-                (student) => student.name.toLowerCase().contains(
-                  _searchQuery.toLowerCase(),
-                ),
-              )
-              .toList();
 }

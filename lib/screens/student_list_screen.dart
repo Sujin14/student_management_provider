@@ -1,134 +1,138 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_management_provider/models/student_model.dart';
-import 'package:student_management_provider/providers/student_provider.dart';
-import 'package:student_management_provider/screens/add_edit_student_screen.dart';
 import 'package:student_management_provider/screens/student_detail_screen.dart';
-import 'package:student_management_provider/widgets/common/empty_message.dart';
-import 'package:student_management_provider/widgets/search/search_bar.dart';
-import 'package:student_management_provider/widgets/layout/student_grid_card.dart';
-import 'package:student_management_provider/widgets/layout/student_list_card.dart';
+import '../models/student_model.dart';
+import '../providers/student_provider.dart';
+import '../utils/dialogs.dart';
+import '../widgets/student_list_view.dart';
+import '../widgets/student_grid_view.dart';
+import '../widgets/student_form.dart';
 
-class StudentListScreen extends StatelessWidget {
+class StudentListScreen extends StatefulWidget {
   const StudentListScreen({super.key});
 
   @override
+  State<StudentListScreen> createState() => _StudentListScreenState();
+}
+
+class _StudentListScreenState extends State<StudentListScreen> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<StudentProvider>(context);
-    final students = provider.filteredStudents;
+    final studentProvider = Provider.of<StudentProvider>(context);
+    final students =
+        studentProvider.isSearching
+            ? studentProvider.searchResults
+            : studentProvider.students;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Student Records'),
-        backgroundColor: const Color.fromARGB(255, 235, 130, 9),
+        title:
+            studentProvider.isSearching
+                ? TextField(
+                  controller: _searchController,
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    hintText: 'Search by name',
+                    border: InputBorder.none,
+                  ),
+                  onChanged: (query) {
+                    studentProvider.searchStudent(query);
+                  },
+                )
+                : const Text('Student Records'),
         actions: [
           IconButton(
-            icon: Icon(provider.isGrid ? Icons.list : Icons.grid_view),
-            onPressed: provider.toggleViewMode,
+            icon: Icon(
+              studentProvider.isGridView ? Icons.list : Icons.grid_view,
+            ),
+            onPressed: () => studentProvider.toggleViewMode(),
+          ),
+          IconButton(
+            icon: Icon(
+              studentProvider.isSearching ? Icons.close : Icons.search,
+            ),
+            onPressed: () {
+              if (studentProvider.isSearching) {
+                _searchController.clear();
+                studentProvider.clearSearch();
+              } else {
+                studentProvider.toggleSearch(true);
+              }
+            },
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed:
-            () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const AddEditStudentScreen()),
-            ),
-        child: const Icon(Icons.add),
-      ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              const Color.fromARGB(255, 235, 130, 9),
-              const Color.fromARGB(255, 218, 232, 18),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          gradient: LinearGradient(colors: [Colors.deepOrange, Colors.amber]),
         ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: CustomSearchBar(onChanged: provider.updateSearchQuery),
-            ),
-            Expanded(
-              child:
-                  students.isEmpty
-                      ? const EmptyMessage()
-                      : provider.isGrid
-                      ? GridView.builder(
-                        padding: const EdgeInsets.all(12),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 0.9,
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 10,
-                            ),
-                        itemCount: students.length,
-                        itemBuilder: (context, index) {
-                          final student = students[index];
-                          return StudentGridCard(
-                            student: student,
-                            onTap: () => _openDetail(context, student),
-                            onEdit: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (_) => AddEditStudentScreen(
-                                        student: student,
-                                      ),
-                                ),
-                              );
-                            },
-                            onDelete: () {
-                              provider.deleteStudent(student.id!);
-                            },
-                          );
-                        },
-                      )
-                      : ListView.builder(
-                        padding: const EdgeInsets.all(12),
-                        itemCount: students.length,
-                        itemBuilder: (context, index) {
-                          final student = students[index];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            child: StudentListCard(
-                              student: student,
-                              onTap: () => _openDetail(context, student),
-                              onEdit: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (_) => AddEditStudentScreen(
-                                          student: student,
-                                        ),
-                                  ),
-                                );
-                              },
-                              onDelete: () {
-                                provider.deleteStudent(student.id!);
-                              },
-                            ),
-                          );
-                        },
-                      ),
-            ),
-          ],
-        ),
+        child:
+            studentProvider.isGridView
+                ? StudentGridView(
+                  students: students,
+                  onTap: (student) => _viewStudentDetails(context, student),
+                  onEdit: (student) => _editStudent(context, student),
+                  onDelete: (student) => _deleteStudent(context, student),
+                )
+                : StudentListView(
+                  students: students,
+                  onTap: (student) => _viewStudentDetails(context, student),
+                  onEdit: (student) => _editStudent(context, student),
+                  onDelete: (student) => _deleteStudent(context, student),
+                ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _addStudent(context),
+        child: const Icon(Icons.add),
       ),
     );
   }
 
-  void _openDetail(BuildContext context, StudentModel student) {
+  void _viewStudentDetails(BuildContext context, Student student) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => StudentDetailScreen(student: student)),
+      MaterialPageRoute(
+        builder: (context) => StudentDetailScreen(student: student),
+      ),
     );
+  }
+
+  void _editStudent(BuildContext context, Student student) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StudentFormScreen(student: student),
+      ),
+    );
+  }
+
+  void _addStudent(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const StudentFormScreen()),
+    );
+  }
+
+  void _deleteStudent(BuildContext context, Student student) async {
+    final confirm = await Dialogs.showConfirmationDialog(
+      context: context,
+      title: 'Delete Student',
+      content: 'Are you sure you want to delete this student?',
+    );
+
+    if (confirm) {
+      await Provider.of<StudentProvider>(
+        context,
+        listen: false,
+      ).deleteStudent(student.id!);
+    }
   }
 }
