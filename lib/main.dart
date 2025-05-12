@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:student_management_provider/providers/image_provider.dart';
 import 'package:student_management_provider/providers/student_provider.dart';
 import 'package:student_management_provider/screens/student_list_screen.dart';
 
@@ -12,12 +13,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => StudentProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => StudentProvider()),
+        ChangeNotifierProvider(create: (_) => ImagePickerProvider()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Student Management',
-        theme: ThemeData(primarySwatch: Colors.indigo),
+        title: 'Student Record Manager',
+        theme: ThemeData(primarySwatch: Colors.teal, useMaterial3: true),
         home: const StudentListScreen(),
       ),
     );
