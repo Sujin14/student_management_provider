@@ -13,7 +13,7 @@ class Validators {
       return 'Age is required';
     }
     final age = int.tryParse(value);
-    if (age == null || age <= 0) {
+    if (age == null || age <= 0 || age > 100) {
       return 'Enter a valid age';
     }
     return null;
@@ -34,8 +34,7 @@ class Validators {
     if (value == null || value.trim().isEmpty) {
       return 'Phone is required';
     }
-    final phoneRegex = RegExp(r'^\d{10}$');
-    if (!phoneRegex.hasMatch(value)) {
+    if (value.length != 10) {
       return 'Phone must be 10 digits';
     }
     return null;

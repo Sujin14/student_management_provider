@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_management_provider/screens/student_detail_screen.dart';
-import '../models/student_model.dart';
+import 'package:student_management_provider/utils/navigations.dart';
 import '../providers/student_provider.dart';
-import '../utils/dialogs.dart';
 import '../widgets/student_list_view.dart';
 import '../widgets/student_grid_view.dart';
-import '../widgets/student_form.dart';
 
 class StudentListScreen extends StatefulWidget {
   const StudentListScreen({super.key});
@@ -78,61 +75,29 @@ class _StudentListScreenState extends State<StudentListScreen> {
             studentProvider.isGridView
                 ? StudentGridView(
                   students: students,
-                  onTap: (student) => _viewStudentDetails(context, student),
-                  onEdit: (student) => _editStudent(context, student),
-                  onDelete: (student) => _deleteStudent(context, student),
+                  onTap:
+                      (student) =>
+                          Navigations.viewStudentDetails(context, student),
+                  onEdit:
+                      (student) => Navigations.editStudent(context, student),
+                  onDelete:
+                      (student) => Navigations.deleteStudent(context, student),
                 )
                 : StudentListView(
                   students: students,
-                  onTap: (student) => _viewStudentDetails(context, student),
-                  onEdit: (student) => _editStudent(context, student),
-                  onDelete: (student) => _deleteStudent(context, student),
+                  onTap:
+                      (student) =>
+                          Navigations.viewStudentDetails(context, student),
+                  onEdit:
+                      (student) => Navigations.editStudent(context, student),
+                  onDelete:
+                      (student) => Navigations.deleteStudent(context, student),
                 ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _addStudent(context),
+        onPressed: () => Navigations.addStudent(context),
         child: const Icon(Icons.add),
       ),
     );
-  }
-
-  void _viewStudentDetails(BuildContext context, Student student) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => StudentDetailScreen(student: student),
-      ),
-    );
-  }
-
-  void _editStudent(BuildContext context, Student student) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => StudentFormScreen(student: student),
-      ),
-    );
-  }
-
-  void _addStudent(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const StudentFormScreen()),
-    );
-  }
-
-  void _deleteStudent(BuildContext context, Student student) async {
-    final confirm = await Dialogs.showConfirmationDialog(
-      context: context,
-      title: 'Delete Student',
-      content: 'Are you sure you want to delete this student?',
-    );
-
-    if (confirm) {
-      await Provider.of<StudentProvider>(
-        context,
-        listen: false,
-      ).deleteStudent(student.id!);
-    }
   }
 }

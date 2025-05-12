@@ -9,12 +9,12 @@ class StudentGridView extends StatelessWidget {
   final void Function(Student student) onDelete;
 
   const StudentGridView({
-    Key? key,
+    super.key,
     required this.students,
     required this.onTap,
     required this.onEdit,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

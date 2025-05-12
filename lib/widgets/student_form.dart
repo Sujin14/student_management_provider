@@ -10,7 +10,7 @@ import '../utils/validators.dart';
 class StudentFormScreen extends StatefulWidget {
   final Student? student;
 
-  const StudentFormScreen({Key? key, this.student}) : super(key: key);
+  const StudentFormScreen({super.key, this.student});
 
   @override
   _StudentFormScreenState createState() => _StudentFormScreenState();
