@@ -5,8 +5,6 @@ class Dialogs {
     required BuildContext context,
     required String title,
     required String content,
-    String confirmText = 'Yes',
-    String cancelText = 'No',
   }) async {
     final result = await showDialog<bool>(
       context: context,
@@ -17,11 +15,11 @@ class Dialogs {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text(cancelText),
+                child: Text('cancel'),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text(confirmText),
+                child: Text('confirm'),
               ),
             ],
           ),

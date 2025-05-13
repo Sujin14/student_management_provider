@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/student_model.dart';
-import 'dart:io'; // Make sure to import this
+import 'dart:io';
 
 class StudentGridView extends StatelessWidget {
   final List<Student> students;
@@ -40,14 +40,11 @@ class StudentGridView extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(height: 8),
-                // Fixing the issue by converting the image path to a File
                 CircleAvatar(
                   backgroundImage:
                       student.imagePath.isEmpty
                           ? null
-                          : FileImage(
-                            File(student.imagePath),
-                          ), // Convert to File
+                          : FileImage(File(student.imagePath)),
                   radius: 40,
                 ),
                 const SizedBox(height: 8),

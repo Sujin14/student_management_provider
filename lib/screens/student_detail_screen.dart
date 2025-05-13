@@ -3,10 +3,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:student_management_provider/utils/navigations.dart';
 import '../models/student_model.dart';
 import '../providers/student_provider.dart';
-import '../utils/dialogs.dart';
-import '../widgets/student_form.dart';
 
 class StudentDetailScreen extends StatelessWidget {
   final Student student;
@@ -21,11 +20,11 @@ class StudentDetailScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: () => _editStudent(context, student),
+            onPressed: () => Navigations.editStudent(context, student),
           ),
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () => _deleteStudent(context, student),
+            onPressed: () => Navigations.deleteStudent(context, student),
           ),
         ],
       ),
@@ -63,30 +62,5 @@ class StudentDetailScreen extends StatelessWidget {
         },
       ),
     );
-  }
-
-  void _editStudent(BuildContext context, Student? student) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => StudentFormScreen(student: student),
-      ),
-    );
-  }
-
-  void _deleteStudent(BuildContext context, Student student) async {
-    final confirm = await Dialogs.showConfirmationDialog(
-      context: context,
-      title: 'Delete Student',
-      content: 'Are you sure you want to delete this student?',
-    );
-
-    if (confirm) {
-      await Provider.of<StudentProvider>(
-        context,
-        listen: false,
-      ).deleteStudent(student.id!);
-      Navigator.pop(context);
-    }
   }
 }
